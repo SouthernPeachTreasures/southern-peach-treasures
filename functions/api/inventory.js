@@ -100,12 +100,14 @@ export async function onRequestGet(context) {
         }
 
         // 3. Try to find/create a checkout link for this variation
-        checkoutUrl = await getCheckoutLink({
+        const checkoutResult = await getCheckoutLink({
           ACCESS_TOKEN,
           LOCATION_ID,
           variationId: variation.id,
           itemName: name
         });
+        checkoutUrl = checkoutResult.url;
+        var debugError = checkoutResult.error;
       }
 
       items.push({
@@ -114,7 +116,8 @@ export async function onRequestGet(context) {
         description,
         price,
         imageUrl,
-        checkoutUrl
+        checkoutUrl,
+        debugError
       });
     }
 
@@ -142,13 +145,8 @@ async function getCheckoutLink({ ACCESS_TOKEN, LOCATION_ID, variationId, itemNam
       },
       body: JSON.stringify({
         idempotency_key: `link-${variationId}`,
-        quick_pay: {
-          name: itemName,
-          price_money: undefined, // price comes from the catalog variation
-          location_id: LOCATION_ID
-        },
         checkout_options: {
-          redirect_url: ""
+          redirect_url: "https://southernpeachtreasures.com/inventory.html"
         },
         order: {
           location_id: LOCATION_ID,
@@ -163,15 +161,17 @@ async function getCheckoutLink({ ACCESS_TOKEN, LOCATION_ID, variationId, itemNam
     });
 
     if (!res.ok) {
-      return null;
+      const errBody = await res.text();
+      console.error(`Square payment link error for "${itemName}" (${res.status}):`, errBody);
+      return { url: null, error: `${res.status}: ${errBody.slice(0, 300)}` };
     }
 
     const data = await res.json();
-    return (data.payment_link && data.payment_link.url) || null;
+    return { url: (data.payment_link && data.payment_link.url) || null, error: null };
 
   } catch (err) {
     console.error("Checkout link error:", err);
-    return null;
+    return { url: null, error: String(err) };
   }
 }
 
