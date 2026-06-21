@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>The Treasure Chest - Southern Peach Treasures</title>
-<meta name="description" content="Browse what's currently for sale at Southern Peach Treasures - all items came straight out of our weekly mystery box and pallet unboxings.">
+<title>Southern Peach Treasures</title>
+<meta name="description" content="Mystery boxes and pallet finds from Georgia. New unboxing every week — see what's inside, then shop the Treasure Chest.">
 <link rel="stylesheet" href="/style.css">
 </head>
 <body>
@@ -14,146 +14,85 @@
 <nav>
   <a href="/" class="brand"><img src="/logo.png" alt="Southern Peach Treasures">Southern Peach Treasures</a>
   <div class="navlinks">
-    <a href="/">Home</a>
-    <a href="/inventory.html" class="active">Treasure Chest</a>
+    <a href="/" class="active">Home</a>
+    <a href="/inventory.html">Treasure Chest</a>
     <a href="/about.html">About</a>
     <a href="/contact.html">Contact</a>
   </div>
 </nav>
 
-<div class="page-section">
-  <div class="vault-header">
-    <div>
-      <div class="eyebrow" style="color:var(--gold);font-size:13px;font-weight:800;letter-spacing:0.3em;text-transform:uppercase;margin-bottom:12px;">The Treasure Chest</div>
-      <h1 style="margin-bottom:6px;">WHAT'S FOR SALE</h1>
-      <p class="lead" style="margin-bottom:0;">Every item below came out of a real Amazon mystery box or pallet — opened on camera. Inventory changes constantly, so check back often!</p>
-    </div>
-    <div class="vault-badge">📦 Updated Live from Square</div>
+<section class="hero">
+  <div class="eyebrow">Mystery Boxes · Pallet Drops · New Weekly</div>
+  <h1>OPEN THE BOX.<br><span class="hl">FIND THE TREASURE.</span></h1>
+  <p>Southern Peach Treasures drops fresh mystery boxes and pallet lots every week. Pay safely by card through Square — and see what you find.</p>
+  <div class="cta-row">
+    <a href="/inventory.html" class="btn btn-primary">Shop the Treasure Chest</a>
+    <a href="/about.html" class="btn btn-secondary">Our Story</a>
   </div>
+</section>
 
-  <div id="filter-row" class="filter-row" style="display:none;"></div>
-
-  <!-- Items load here automatically from Square -->
-  <div id="inventory-grid">
-    <div class="status-msg">
-      <div class="spinner"></div>
-      Loading current inventory&hellip;
-    </div>
-  </div>
+<div class="ticker">
+  <div class="item"><strong>Weekly</strong>New Drops</div>
+  <div class="item"><strong>Square</strong>Secure Checkout</div>
+  <div class="item"><strong>Georgia</strong>Based &amp; Shipped</div>
+  <div class="item"><strong>Limited</strong>While Supplies Last</div>
 </div>
+
+<!--
+  ============================================================
+  WEEKLY UNBOXING VIDEO — UPDATE THIS EACH WEEK
+  ============================================================
+  To change the video:
+  1. Go to TikTok and find your unboxing video
+  2. Click "Share" then "Embed"
+  3. Copy the embed code TikTok gives you
+  4. Replace everything between <!-- VIDEO START --> and
+     <!-- VIDEO END --> below with that embed code
+
+  If you don't have a video embed yet, leave the placeholder
+  as-is and it will show a "coming soon" message.
+  ============================================================
+-->
+<section class="weekly-video">
+  <div class="eyebrow">This Week's Drop</div>
+  <h2>The Big Unboxing</h2>
+  <p>Watch this week's mystery box or pallet get opened live — every item shown goes straight into the Treasure Chest.</p>
+  <div class="video-frame">
+    <!-- VIDEO START -->
+    <div class="placeholder">
+      <div class="play">▶</div>
+      <div>This week's unboxing video<br>coming soon</div>
+    </div>
+    <!-- VIDEO END -->
+  </div>
+</section>
+
+<section class="how">
+  <h2>HOW IT WORKS</h2>
+  <div class="how-grid">
+    <div class="how-item">
+      <div class="num">01</div>
+      <h3>Watch the Unboxing</h3>
+      <p>Every week we open a new mystery box or pallet on camera — right here on the home page.</p>
+    </div>
+    <div class="how-item">
+      <div class="num">02</div>
+      <h3>Browse the Treasure Chest</h3>
+      <p>Everything we found goes straight into the Treasure Chest — first come, first served.</p>
+    </div>
+    <div class="how-item">
+      <div class="num">03</div>
+      <h3>Checkout Securely</h3>
+      <p>Pay safely by credit card through Square — fast, secure, and easy.</p>
+    </div>
+  </div>
+</section>
 
 <footer>
   <div class="brand" style="display:flex;align-items:center;gap:10px;justify-content:center;">Southern Peach Treasures</div>
   <div class="tagline">Treasures in Every Box. Deals in Every Find.</div>
   <div>&copy; 2026 Southern Peach Treasures · Secure checkout powered by Square</div>
 </footer>
-
-<script>
-async function loadInventory() {
-  const grid = document.getElementById('inventory-grid');
-  const filterRow = document.getElementById('filter-row');
-
-  try {
-    const res = await fetch('/api/inventory');
-    if (!res.ok) throw new Error('Failed to load inventory');
-    const data = await res.json();
-
-    if (!data.items || data.items.length === 0) {
-      grid.innerHTML = `
-        <div class="status-msg">
-          Nothing in the Treasure Chest right now — check back soon, new items drop every week!
-        </div>`;
-      return;
-    }
-
-    // Group items by category
-    const groups = {};
-    data.items.forEach(item => {
-      const cat = item.category || 'Uncategorized';
-      if (!groups[cat]) groups[cat] = [];
-      groups[cat].push(item);
-    });
-
-    // Put "Top Rated" first if it exists, then alphabetical
-    const categoryNames = Object.keys(groups).sort((a, b) => {
-      if (a.toLowerCase().includes('top rated')) return -1;
-      if (b.toLowerCase().includes('top rated')) return 1;
-      return a.localeCompare(b);
-    });
-
-    // Build filter pills
-    if (categoryNames.length > 1) {
-      filterRow.style.display = 'flex';
-      filterRow.innerHTML = ['All', ...categoryNames].map((cat, i) => `
-        <div class="filter-pill ${i === 0 ? 'active' : ''}" data-cat="${escapeHtml(cat)}">${escapeHtml(cat)}</div>
-      `).join('');
-
-      filterRow.querySelectorAll('.filter-pill').forEach(pill => {
-        pill.addEventListener('click', () => {
-          filterRow.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
-          pill.classList.add('active');
-          const selected = pill.dataset.cat;
-          document.querySelectorAll('.category-section').forEach(section => {
-            if (selected === 'All' || section.dataset.cat === selected) {
-              section.style.display = '';
-            } else {
-              section.style.display = 'none';
-            }
-          });
-        });
-      });
-    }
-
-    // Build sections
-    grid.innerHTML = categoryNames.map(cat => {
-      const isTopRated = cat.toLowerCase().includes('top rated');
-      const items = groups[cat];
-
-      return `
-        <div class="category-section" data-cat="${escapeHtml(cat)}">
-          <h2 class="category-title ${isTopRated ? 'top-rated' : ''}">
-            ${isTopRated ? '<span class="star">⭐</span>' : ''}${escapeHtml(cat)}
-          </h2>
-          <div class="grid">
-            ${items.map(item => `
-              <div class="product">
-                <div class="img">
-                  ${item.imageUrl
-                    ? `<img src="${item.imageUrl}" alt="${escapeHtml(item.name)}">`
-                    : '📦'}
-                </div>
-                <div class="body">
-                  <h3>${escapeHtml(item.name)}</h3>
-                  <div class="price">${item.price ? '$' + item.price : 'Price TBD'}</div>
-                  <div class="desc">${escapeHtml(item.description || '')}</div>
-                  ${item.checkoutUrl
-                    ? `<a class="buy-btn" href="${item.checkoutUrl}" target="_blank" rel="noopener">Buy with Square</a>`
-                    : `<span class="buy-btn disabled">Coming Soon</span>`}
-                </div>
-              </div>
-            `).join('')}
-          </div>
-        </div>
-      `;
-    }).join('');
-
-  } catch (err) {
-    grid.innerHTML = `
-      <div class="status-msg">
-        Couldn't load inventory right now. Please refresh, or check back shortly.
-      </div>`;
-    console.error(err);
-  }
-}
-
-function escapeHtml(str) {
-  const div = document.createElement('div');
-  div.textContent = str;
-  return div.innerHTML;
-}
-
-loadInventory();
-</script>
 
 </body>
 </html>
