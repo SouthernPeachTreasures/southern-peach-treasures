@@ -4,7 +4,7 @@ This is the website for Southern Peach Treasures. It's a simple static
 site (no database, no separate backend) that automatically pulls your
 current inventory from your Square account.
 
-## What's in this folder
+## What's in this folder . 
 
 ```
 public/
