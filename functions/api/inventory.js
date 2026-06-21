@@ -42,8 +42,8 @@ export async function onRequestGet(context) {
   const SQUARE_API_BASE = "https://connect.squareup.com/v2";
 
   try {
-    // 1. Fetch all catalog objects (items + images) from Square
-    const catalogRes = await fetch(`${SQUARE_API_BASE}/catalog/list?types=ITEM,IMAGE`, {
+    // 1. Fetch all catalog objects (items + images + categories) from Square
+    const catalogRes = await fetch(`${SQUARE_API_BASE}/catalog/list?types=ITEM,IMAGE,CATEGORY`, {
       headers: {
         "Authorization": `Bearer ${ACCESS_TOKEN}`,
         "Square-Version": "2024-10-17",
@@ -69,6 +69,15 @@ export async function onRequestGet(context) {
       }
     }
 
+    // Build a lookup of CATEGORY objects by their ID, so we can attach
+    // the category name to each item
+    const categoryMap = {};
+    for (const obj of objects) {
+      if (obj.type === "CATEGORY" && obj.category_data && obj.category_data.name) {
+        categoryMap[obj.id] = obj.category_data.name;
+      }
+    }
+
     // 2. Build the simplified item list
     const items = [];
 
@@ -79,6 +88,18 @@ export async function onRequestGet(context) {
 
       const name = itemData.name || "Untitled Item";
       const description = itemData.description || itemData.description_plaintext || "";
+
+      // Category - Square items can have a primary category and/or
+      // a list of categories; we'll use the first one we find
+      let category = "Uncategorized";
+      if (itemData.category_id && categoryMap[itemData.category_id]) {
+        category = categoryMap[itemData.category_id];
+      } else if (itemData.categories && itemData.categories.length > 0) {
+        const firstCatId = itemData.categories[0].id;
+        if (categoryMap[firstCatId]) {
+          category = categoryMap[firstCatId];
+        }
+      }
 
       // Image
       let imageUrl = null;
@@ -117,6 +138,7 @@ export async function onRequestGet(context) {
         price,
         imageUrl,
         checkoutUrl,
+        category,
         debugError
       });
     }
