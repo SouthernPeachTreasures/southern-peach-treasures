@@ -276,6 +276,33 @@ nav{
 }
 @keyframes spin{to{transform:rotate(360deg);}}
 
+/* FILTER PILLS */
+.filter-row{display:flex;gap:12px;margin-bottom:40px;flex-wrap:wrap;}
+.filter-pill{
+  border:1px solid var(--line);background:var(--bg-2);
+  padding:9px 20px;border-radius:6px;font-size:13px;
+  font-weight:700;color:var(--text-dim);cursor:pointer;
+  font-family:'Inter',sans-serif;
+  transition:all .15s;
+}
+.filter-pill:hover{border-color:var(--gold);color:var(--text);}
+.filter-pill.active{background:var(--gold);color:#1a1206;border-color:var(--gold);}
+
+/* CATEGORY SECTIONS */
+.category-section{margin-bottom:56px;}
+.category-section:last-child{margin-bottom:0;}
+.category-title{
+  font-size:clamp(24px,3.5vw,32px);
+  margin-bottom:20px;
+  padding-bottom:12px;
+  border-bottom:1px solid var(--line);
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+.category-title.top-rated{color:var(--gold);}
+.category-title .star{font-size:22px;}
+
 /* ABOUT */
 .about-grid{display:grid;grid-template-columns:1.2fr 1fr;gap:50px;align-items:start;}
 @media (max-width:760px){.about-grid{grid-template-columns:1fr;}}
